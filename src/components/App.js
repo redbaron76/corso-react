@@ -6,6 +6,7 @@ class App extends Component {
 
     this.state = {
       count: 0,
+      initCount: 0,
     };
   }
 
@@ -24,12 +25,14 @@ class App extends Component {
         c--;
         break;
       case 'set':
+        c = this.state.initCount;
+        break;
       case 'reset':
       default:
         c = 0;
     }
 
-    this.setState({ count: c });
+    this.setState({ count: c, initCount: 0 });
 
     /*if (operator === '+') {
       this.setState({ count: this.state.count + 1 });
@@ -40,16 +43,29 @@ class App extends Component {
     }*/
   }
 
+  handleChange(e) {
+    let n = Number(e.target.value);
+    // 1 == '1' true
+    // 1 !== '1' false
+    // var a = '1'
+    if (typeof n === 'number' && !isNaN(n)) {
+      this.setState({ initCount: n });
+    }
+  }
+
   render() {
     return (
       <div>
         <h1>Contatore</h1>
-        <button onClick={() => this.handleClick('+')}>+</button>
-        <p>{this.state.count}</p>
-        <button onClick={() => this.handleClick('-')}>-</button>
+        <div>
+          <button onClick={() => this.handleClick('+')}>+</button>
+          <p>{this.state.count}</p>
+          <button onClick={() => this.handleClick('-')}>-</button>
+        </div>
+        <br />
         <div>
           <button onClick={() => this.handleClick('reset')}>RESET</button>
-          <input size={5} defaultValue={0} />
+          <input onChange={e => this.handleChange(e)} size={5} value={this.state.initCount} />
           <button onClick={() => this.handleClick('set')}>SET</button>
         </div>
       </div>
