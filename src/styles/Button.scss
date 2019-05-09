@@ -1,0 +1,18 @@
+.btn {
+  box-sizing: border-box;
+  background: white;
+  border-collapse: collapse;
+  display: inline-flex;
+  padding: 2px 3px;
+  border-top: 1px solid black;
+  border-left: 1px solid black;
+  width: 100px;
+  height: 100px;
+  
+  justify-content: center;
+  align-items: center;
+  
+  &.double {
+    width: 200px;
+  }
+}

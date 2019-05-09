@@ -1,8 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
+import '../styles/Button.scss';
+
 const Button = props => {
-  return <span onClick={() => props.click(props.label)}>{props.label || 'btn'}</span>;
+  return (
+    <div className="btn" onClick={() => props.click(props.label)}>
+      {props.label || 'btn'}
+    </div>
+  );
 };
 
 Button.propTypes = {
