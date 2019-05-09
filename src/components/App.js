@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import Button from './Button';
+import { PLUS, MINUS, SET, RESET } from '../config/const';
 
 class App extends Component {
   constructor() {
@@ -8,6 +10,8 @@ class App extends Component {
       count: 0,
       initCount: 0,
     };
+
+    this.handleClick = this.handleClick.bind(this);
   }
 
   handleClick(operator) {
@@ -58,15 +62,15 @@ class App extends Component {
       <div>
         <h1>Contatore</h1>
         <div>
-          <button onClick={() => this.handleClick('+')}>+</button>
+          <Button click={this.handleClick} label={PLUS} />
           <p>{this.state.count}</p>
-          <button onClick={() => this.handleClick('-')}>-</button>
+          <Button click={this.handleClick} label={MINUS} />
         </div>
         <br />
         <div>
-          <button onClick={() => this.handleClick('reset')}>RESET</button>
+          <Button click={this.handleClick} label={RESET} />
           <input onChange={e => this.handleChange(e)} size={5} value={this.state.initCount} />
-          <button onClick={() => this.handleClick('set')}>SET</button>
+          <Button click={this.handleClick} label={SET} />
         </div>
       </div>
     );
