@@ -1,0 +1,23 @@
+html {
+  box-sizing: border-box;
+}
+
+*, *:before, *:after {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: bisque;
+}
+
+#calculator {
+  background-color: white;
+  width: 401px;
+
+  border-right: 1px solid white;
+  border-bottom: 1px solid white;
+
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
