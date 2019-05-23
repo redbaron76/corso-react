@@ -3,7 +3,9 @@ import Button from './Button';
 import Display from './Display';
 
 import { PLUS, MINUS, MULTI, DIVIDE, EQUAL, DOT } from '../config/const';
-import { includes } from 'lodash';
+
+import { sum, subtract, multiply, divide, includes } from 'lodash';
+
 import '../styles/App.scss';
 
 class App extends Component {
@@ -14,7 +16,7 @@ class App extends Component {
     this.digits = [];
 
     // Memorizza primo e secondo operando
-    this.operators = [];
+    this.operation = [];
 
     this.state = {
       display: '',
@@ -25,58 +27,73 @@ class App extends Component {
   }
 
   updateDigits(digit) {
-    console.log('digit:', digit);
-    if (digit !== DOT || (digit === DOT && !includes(this.digits, digit))) {
+    console.log('digit', digit);
+    // check se DOT è il primo digit senza ZERO
+    if (this.digits.length === 0 && digit === DOT) this.digits.push('0');
+    // check una sola DOT
+    if (digit !== DOT || (digit === DOT && !includes(this.digits, DOT))) {
+      // exit se a 0 segue un altro 0
+      if (this.digits[0] === '0' && digit === '0') return false;
+      // incremento digits e mostro a display tutti i digits uniti da join
       this.digits.push(digit);
       this.setState({ display: this.digits.join('') });
     }
   }
 
   setOperation(operation) {
-    console.log('operation:', operation);
-    // salvo operatore
+    console.log('setOperation', operation);
+    // imposta operatore in state
     this.setState({ operation });
-    // salvo primo operando
-    const firstNumber = this.state.display;
-    // aggiungo primo operando
-    this.operators.push(parseFloat(firstNumber));
-    // reset del this.digits
+    // trasforma digits in primo numero
+    const num = this.state.display;
+    // set primo numero
+    this.operation.push(parseFloat(num));
+    // reset digits
     this.digits = [];
 
-    console.log('this.operators', this.operators, 'this.digits', this.digits);
+    console.log('this.operation', this.operation, 'this.digits', this.digits);
   }
 
   doComputation() {
-    const secondNumber = this.state.display;
-    this.operators.push(parseFloat(secondNumber));
+    let val = '0';
 
-    console.log(this.operators);
+    // trasforma digits in primo numero
+    const num = this.state.display;
+    // set primo numero
+    this.operation.push(parseFloat(num));
 
-    let result = '';
+    console.log('this.operation', this.operation);
 
+    // eseguo l'operazione
     switch (this.state.operation) {
       case PLUS:
-        result = this.operators[0] + this.operators[1];
+        val = sum(this.operation); // check documentazione
         break;
       case MINUS:
-        result = this.operators[0] - this.operators[1];
+        val = subtract(this.operation[0], this.operation[1]);
         break;
       case MULTI:
-        result = this.operators[0] * this.operators[1];
+        val = multiply(this.operation[0], this.operation[1]);
         break;
       case DIVIDE:
-        result = this.operators[0] / this.operators[1];
+        val = divide(this.operation[0], this.operation[1]);
         break;
     }
 
-    this.operators = [];
+    // Salva risultato operazione come float
+    const result = parseFloat(val);
+
+    // reset dell'array digits
     this.digits = [];
-    this.setState({ display: parseFloat(result), operation: '' });
+    // reset operation
+    this.operation = [];
+    // output del risultato e reset operatore
+    this.setState({ display: result, operation: '' });
   }
 
   handleClick(label) {
     // Gestore del click
-    // console.log('label:', label);
+    console.log('handleClick', label);
 
     switch (label) {
       case PLUS:
