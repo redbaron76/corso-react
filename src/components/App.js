@@ -3,7 +3,7 @@ import Button from './Button';
 import Display from './Display';
 
 import { PLUS, MINUS, MULTI, DIVIDE, EQUAL, DOT } from '../config/const';
-import { includes } from 'lodash';
+import { sum, subtract, multiply, divide, includes } from 'lodash';
 import '../styles/App.scss';
 
 class App extends Component {
@@ -26,6 +26,13 @@ class App extends Component {
 
   updateDigits(digit) {
     console.log('digit:', digit);
+    if (this.digits.length >= 1 && this.digits[0] === '0' && this.digits[1] !== DOT) {
+      this.digits.shift();
+      console.log('shifted digit:', digit);
+    }
+
+    if (this.digits.length === 0 && digit === DOT) this.digits.push('0');
+
     if (digit !== DOT || (digit === DOT && !includes(this.digits, digit))) {
       this.digits.push(digit);
       this.setState({ display: this.digits.join('') });
@@ -56,16 +63,16 @@ class App extends Component {
 
     switch (this.state.operation) {
       case PLUS:
-        result = this.operators[0] + this.operators[1];
+        result = sum(this.operators);
         break;
       case MINUS:
-        result = this.operators[0] - this.operators[1];
+        result = subtract(this.operators[0], this.operators[1]);
         break;
       case MULTI:
-        result = this.operators[0] * this.operators[1];
+        result = multiply(this.operators[0], this.operators[1]);
         break;
       case DIVIDE:
-        result = this.operators[0] / this.operators[1];
+        result = divide(this.operators[0], this.operators[1]);
         break;
     }
 
