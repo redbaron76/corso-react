@@ -16,6 +16,25 @@ class App extends Component {
     // Memorizza primo e secondo operando
     this.operators = [];
 
+    this.labels = [
+      '7',
+      '8',
+      '9',
+      DIVIDE,
+      '4',
+      '5',
+      '6',
+      MULTI,
+      '1',
+      '2',
+      '3',
+      MINUS,
+      '0',
+      DOT,
+      EQUAL,
+      PLUS,
+    ];
+
     this.state = {
       display: '',
       operation: '',
@@ -107,22 +126,9 @@ class App extends Component {
         <h1>Calcolatrice REACT</h1>
         <div id="calculator">
           <Display value={this.state.display} />
-          <Button label="7" click={this.handleClick} />
-          <Button label="8" click={this.handleClick} />
-          <Button label="9" click={this.handleClick} />
-          <Button label={DIVIDE} click={this.handleClick} orange />
-          <Button label="4" click={this.handleClick} />
-          <Button label="5" click={this.handleClick} />
-          <Button label="6" click={this.handleClick} />
-          <Button label={MULTI} click={this.handleClick} orange />
-          <Button label="1" click={this.handleClick} />
-          <Button label="2" click={this.handleClick} />
-          <Button label="3" click={this.handleClick} />
-          <Button label={MINUS} click={this.handleClick} orange />
-          <Button label="0" click={this.handleClick} />
-          <Button label={DOT} click={this.handleClick} />
-          <Button label={EQUAL} click={this.handleClick} orange />
-          <Button label={PLUS} click={this.handleClick} orange />
+          {this.labels.map((label, index) => (
+            <Button key={'btn-' + index} label={label} click={this.handleClick} />
+          ))}
         </div>
       </div>
     );

@@ -1,12 +1,16 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
+import { PLUS, MINUS, MULTI, DIVIDE, EQUAL } from '../config/const';
+import { includes } from 'lodash';
+
 import '../styles/Button.scss';
 
 const Button = props => {
   const classes = ['btn'];
 
-  if (props.orange) classes.push('orange');
+  // if (props.orange) classes.push('orange');
+  if (includes([PLUS, MINUS, MULTI, DIVIDE, EQUAL], props.label)) classes.push('orange');
 
   return (
     <div className={classes.join(' ')} onClick={() => props.click(props.label)}>
