@@ -3,7 +3,7 @@ import Button from './Button';
 import Display from './Display';
 
 import { PLUS, MINUS, MULTI, DIVIDE, EQUAL, DOT } from '../config/const';
-import { includes } from 'lodash';
+import { sum, subtract, multiply, divide, includes } from 'lodash';
 import '../styles/App.scss';
 
 class App extends Component {
@@ -17,7 +17,7 @@ class App extends Component {
     this.operators = [];
 
     this.state = {
-      display: '',
+      display: 0,
       operation: '',
     };
 
@@ -26,13 +26,20 @@ class App extends Component {
 
   updateDigits(digit) {
     console.log('digit:', digit);
+    // check se DOT è il primo digit senza ZERO
+    if (this.digits.length === 0 && digit === DOT) this.digits.push('0');
     if (digit !== DOT || (digit === DOT && !includes(this.digits, digit))) {
+      // exit se a 0 segue un altro 0
+      if (this.digits[0] === '0' && digit === '0') return false;
       this.digits.push(digit);
       this.setState({ display: this.digits.join('') });
     }
   }
 
   setOperation(operation) {
+    // Non eseguire operazione se non ho almeno una cifra
+    if (this.digits.length === 0) return false;
+
     console.log('operation:', operation);
     // salvo operatore
     this.setState({ operation });
@@ -50,22 +57,25 @@ class App extends Component {
     const secondNumber = this.state.display;
     this.operators.push(parseFloat(secondNumber));
 
+    // Non eseguire computazione se non ho 2 operatori
+    if (this.operators.length !== 2) return false;
+
     console.log(this.operators);
 
     let result = '';
 
     switch (this.state.operation) {
       case PLUS:
-        result = this.operators[0] + this.operators[1];
+        result = sum(this.operators);
         break;
       case MINUS:
-        result = this.operators[0] - this.operators[1];
+        result = subtract(this.operators[0], this.operators[1]);
         break;
       case MULTI:
-        result = this.operators[0] * this.operators[1];
+        result = multiply(this.operators[0], this.operators[1]);
         break;
       case DIVIDE:
-        result = this.operators[0] / this.operators[1];
+        result = divide(this.operators[0], this.operators[1]);
         break;
     }
 
@@ -95,27 +105,33 @@ class App extends Component {
   }
 
   render() {
+    const buttons = [
+      '7',
+      '8',
+      '9',
+      DIVIDE,
+      '4',
+      '5',
+      '6',
+      MULTI,
+      '1',
+      '2',
+      '3',
+      MINUS,
+      '0',
+      DOT,
+      EQUAL,
+      PLUS,
+    ];
+
     return (
       <div>
         <h1>Calcolatrice REACT</h1>
         <div id="calculator">
           <Display value={this.state.display} />
-          <Button label="7" click={this.handleClick} />
-          <Button label="8" click={this.handleClick} />
-          <Button label="9" click={this.handleClick} />
-          <Button label={DIVIDE} click={this.handleClick} orange />
-          <Button label="4" click={this.handleClick} />
-          <Button label="5" click={this.handleClick} />
-          <Button label="6" click={this.handleClick} />
-          <Button label={MULTI} click={this.handleClick} orange />
-          <Button label="1" click={this.handleClick} />
-          <Button label="2" click={this.handleClick} />
-          <Button label="3" click={this.handleClick} />
-          <Button label={MINUS} click={this.handleClick} orange />
-          <Button label="0" click={this.handleClick} />
-          <Button label={DOT} click={this.handleClick} />
-          <Button label={EQUAL} click={this.handleClick} orange />
-          <Button label={PLUS} click={this.handleClick} orange />
+          {buttons.map((label, index) => (
+            <Button key={'button-' + index} label={label} click={this.handleClick} />
+          ))}
         </div>
       </div>
     );
