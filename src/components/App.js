@@ -14,7 +14,6 @@ class App extends Component {
     this.digits = [];
 
     // Flag
-    this.startCalculator = true;
     this.total = 0;
 
     // Memorizza primo e secondo operando
@@ -63,54 +62,69 @@ class App extends Component {
   }
 
   setOperation(operation) {
-    // Non eseguire operazione se non ho almeno una cifra
-    if (this.startCalculator && this.digits.length === 0) return false;
+    if (!this.state.display) return false;
+
+    // salvo primo operando
+    const firstNumber = parseFloat(this.state.display);
+
+    if (this.operators.length === 1 && this.state.operation) {
+      this.doComputation(true);
+    } else {
+      // aggiungo primo operando
+      this.operators.push(firstNumber);
+    }
 
     console.log('operation:', operation);
     // salvo operatore
     this.setState({ operation });
-    // salvo primo operando
-    const firstNumber = this.state.display;
-    // aggiungo primo operando
-    this.operators.push(parseFloat(firstNumber));
+
     // reset del this.digits
     this.digits = [];
 
     console.log('this.operators', this.operators, 'this.digits', this.digits);
   }
 
-  doComputation() {
-    const secondNumber = this.state.display;
-    this.operators.push(parseFloat(secondNumber));
+  doComputation(setTotal = false) {
+    // Annulla = se non ho operndi e operatore
+    if (this.operators.length !== 2 && !this.state.operation) return false;
 
-    this.startCalculator = false;
+    const secondNumber = parseFloat(this.state.display);
+    this.operators.push(secondNumber);
 
-    console.log('doComputation', this.operators);
+    console.log('doComputation BEFORE RESULT', 'this.operators', this.operators);
 
-    let result = '';
+    this.total = this.getResult();
 
-    switch (this.state.operation) {
-      case PLUS:
-        result = sum(this.operators);
-        break;
-      case MINUS:
-        result = subtract(this.operators[0], this.operators[1]);
-        break;
-      case MULTI:
-        result = multiply(this.operators[0], this.operators[1]);
-        break;
-      case DIVIDE:
-        result = divide(this.operators[0], this.operators[1]);
-        break;
+    // imposta totale come primo operator
+    this.operators = [];
+    if (setTotal) this.operators.push(this.total);
+    console.log('doComputation AFTER RESULT', 'this.operators', this.operators);
+
+    this.digits = [];
+    this.setState({ display: this.total, operation: '' });
+  }
+
+  getResult() {
+    let result = 0;
+
+    if (this.operators.length === 2) {
+      switch (this.state.operation) {
+        case PLUS:
+          result = sum(this.operators);
+          break;
+        case MINUS:
+          result = subtract(this.operators[0], this.operators[1]);
+          break;
+        case MULTI:
+          result = multiply(this.operators[0], this.operators[1]);
+          break;
+        case DIVIDE:
+          result = divide(this.operators[0], this.operators[1]);
+          break;
+      }
     }
 
-    const total = parseFloat(result);
-    this.total = total;
-
-    this.operators = [];
-    this.digits = [];
-    this.startCalculator = true;
-    this.setState({ display: total, operation: '' });
+    return parseFloat(parseFloat(result).toPrecision(12));
   }
 
   handleClick(label) {
