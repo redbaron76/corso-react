@@ -3,9 +3,7 @@ import Button from './Button';
 import Display from './Display';
 
 import { PLUS, MINUS, MULTI, DIVIDE, EQUAL, DOT } from '../config/const';
-
 import { sum, subtract, multiply, divide, includes } from 'lodash';
-
 import '../styles/App.scss';
 
 class App extends Component {
@@ -15,8 +13,31 @@ class App extends Component {
     // Memorizza le cifre e la virgola in sequenza
     this.digits = [];
 
+    // Flag
+    this.startCalculator = true;
+    this.total = 0;
+
     // Memorizza primo e secondo operando
-    this.operation = [];
+    this.operators = [];
+
+    this.labels = [
+      '7',
+      '8',
+      '9',
+      DIVIDE,
+      '4',
+      '5',
+      '6',
+      MULTI,
+      '1',
+      '2',
+      '3',
+      MINUS,
+      '0',
+      DOT,
+      EQUAL,
+      PLUS,
+    ];
 
     this.state = {
       display: '',
@@ -27,27 +48,31 @@ class App extends Component {
   }
 
   updateDigits(digit) {
-    console.log('digit', digit);
-    // check se DOT è il primo digit senza ZERO
+    console.log('digit:', digit);
+    if (this.digits.length >= 1 && this.digits[0] === '0' && this.digits[1] !== DOT) {
+      this.digits.shift();
+      console.log('shifted digit:', digit);
+    }
+
     if (this.digits.length === 0 && digit === DOT) this.digits.push('0');
-    // check una sola DOT
-    if (digit !== DOT || (digit === DOT && !includes(this.digits, DOT))) {
-      // exit se a 0 segue un altro 0
-      if (this.digits[0] === '0' && digit === '0') return false;
-      // incremento digits e mostro a display tutti i digits uniti da join
+
+    if (digit !== DOT || (digit === DOT && !includes(this.digits, digit))) {
       this.digits.push(digit);
       this.setState({ display: this.digits.join('') });
     }
   }
 
   setOperation(operation) {
-    console.log('setOperation', operation);
-    // imposta operatore in state
+    // Non eseguire operazione se non ho almeno una cifra
+    if (this.startCalculator && this.digits.length === 0) return false;
+
+    console.log('operation:', operation);
+    // salvo operatore
     this.setState({ operation });
     // trasforma digits in primo numero
     const num = this.state.display;
     // set primo numero
-    this.operation.push(parseFloat(num));
+    this.operators.push(parseFloat(num));
     // reset digits
     this.digits = [];
 
@@ -55,40 +80,37 @@ class App extends Component {
   }
 
   doComputation() {
-    let val = '0';
+    const secondNumber = this.state.display;
+    this.operators.push(parseFloat(secondNumber));
 
-    // trasforma digits in primo numero
-    const num = this.state.display;
-    // set primo numero
-    this.operation.push(parseFloat(num));
+    this.startCalculator = false;
 
-    console.log('this.operation', this.operation);
+    console.log('doComputation', this.operators);
 
-    // eseguo l'operazione
+    let result = '';
+
     switch (this.state.operation) {
       case PLUS:
-        val = sum(this.operation); // check documentazione
+        result = sum(this.operators);
         break;
       case MINUS:
-        val = subtract(this.operation[0], this.operation[1]);
+        result = subtract(this.operators[0], this.operators[1]);
         break;
       case MULTI:
-        val = multiply(this.operation[0], this.operation[1]);
+        result = multiply(this.operators[0], this.operators[1]);
         break;
       case DIVIDE:
-        val = divide(this.operation[0], this.operation[1]);
+        result = divide(this.operators[0], this.operators[1]);
         break;
     }
 
-    // Salva risultato operazione come float
-    const result = parseFloat(val);
+    const total = parseFloat(result);
+    this.total = total;
 
-    // reset dell'array digits
+    this.operators = [];
     this.digits = [];
-    // reset operation
-    this.operation = [];
-    // output del risultato e reset operatore
-    this.setState({ display: result, operation: '' });
+    this.startCalculator = true;
+    this.setState({ display: total, operation: '' });
   }
 
   handleClick(label) {
@@ -117,22 +139,9 @@ class App extends Component {
         <h1>Calcolatrice REACT</h1>
         <div id="calculator">
           <Display value={this.state.display} />
-          <Button label="7" click={this.handleClick} />
-          <Button label="8" click={this.handleClick} />
-          <Button label="9" click={this.handleClick} />
-          <Button label={DIVIDE} click={this.handleClick} orange />
-          <Button label="4" click={this.handleClick} />
-          <Button label="5" click={this.handleClick} />
-          <Button label="6" click={this.handleClick} />
-          <Button label={MULTI} click={this.handleClick} orange />
-          <Button label="1" click={this.handleClick} />
-          <Button label="2" click={this.handleClick} />
-          <Button label="3" click={this.handleClick} />
-          <Button label={MINUS} click={this.handleClick} orange />
-          <Button label="0" click={this.handleClick} />
-          <Button label={DOT} click={this.handleClick} />
-          <Button label={EQUAL} click={this.handleClick} orange />
-          <Button label={PLUS} click={this.handleClick} orange />
+          {this.labels.map((label, index) => (
+            <Button key={'btn-' + index} label={label} click={this.handleClick} />
+          ))}
         </div>
       </div>
     );
