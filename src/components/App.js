@@ -13,9 +13,6 @@ class App extends Component {
     // Memorizza le cifre e la virgola in sequenza
     this.digits = [];
 
-    // Flag
-    this.total = 0;
-
     // Memorizza primo e secondo operando
     this.operators = [];
 
@@ -62,21 +59,25 @@ class App extends Component {
   }
 
   setOperation(operation) {
+    // esci se display è vuoto
     if (!this.state.display) return false;
 
     // salvo primo operando
     const firstNumber = parseFloat(this.state.display);
 
+    // calcolo (e salvo totale come primo operando)
+    // se ho il primo operando
+    // e ho il primo operatore
     if (this.operators.length === 1 && this.state.operation) {
       this.doComputation(true);
     } else {
-      // aggiungo primo operando
+      // Altrimenti aggiungo primo operando (comportamento normale)
       this.operators.push(firstNumber);
     }
 
-    console.log('operation:', operation);
-    // salvo operatore
+    // imposto operatore
     this.setState({ operation });
+    console.log('operation:', operation);
 
     // reset del this.digits
     this.digits = [];
@@ -88,20 +89,23 @@ class App extends Component {
     // Annulla = se non ho operndi e operatore
     if (this.operators.length !== 2 && !this.state.operation) return false;
 
+    // prendo secondo operando dal display
     const secondNumber = parseFloat(this.state.display);
     this.operators.push(secondNumber);
 
     console.log('doComputation BEFORE RESULT', 'this.operators', this.operators);
 
-    this.total = this.getResult();
+    // calcolo il risultato e lo salvo in total
+    const total = this.getResult();
 
-    // imposta totale come primo operator
     this.operators = [];
-    if (setTotal) this.operators.push(this.total);
+    // imposta totale come primo operator SE setTotal è true (passato in setOperation)
+    if (setTotal) this.operators.push(total);
+
     console.log('doComputation AFTER RESULT', 'this.operators', this.operators);
 
     this.digits = [];
-    this.setState({ display: this.total, operation: '' });
+    this.setState({ display: total, operation: '' });
   }
 
   getResult() {
